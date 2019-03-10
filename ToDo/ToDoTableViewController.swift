@@ -11,10 +11,17 @@ import UIKit
 class ToDoTableViewController: UITableViewController {
 
     var list = ["Watch Movie","Shopping","Swiming"]
+    let defaults = UserDefaults.standard
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        if let items = defaults.value(forKey: "listValue") as? [String]{
+            list = items
+        }
+        
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -62,6 +69,7 @@ class ToDoTableViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New ToDo Item", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { (UIAlertAction) in
             self.list.append(textField.text!)
+            self.defaults.setValue(self.list, forKey: "listValue")
             self.tableView.reloadData()
             
         }

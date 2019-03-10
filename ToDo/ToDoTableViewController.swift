@@ -10,7 +10,7 @@ import UIKit
 
 class ToDoTableViewController: UITableViewController {
 
-    let list = ["Watch Movie","Shopping","Swiming"]
+    var list = ["Watch Movie","Shopping","Swiming"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,7 +55,27 @@ class ToDoTableViewController: UITableViewController {
         print(list[indexPath.row])
     }
  
-
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Add New ToDo Item", message: "", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Add Item", style: .default) { (UIAlertAction) in
+            self.list.append(textField.text!)
+            self.tableView.reloadData()
+            
+        }
+        
+        alert.addAction(action)
+        
+        alert.addTextField { (UITextField) in
+            UITextField.placeholder = "Create your own item"
+            textField = UITextField
+        }
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

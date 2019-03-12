@@ -13,6 +13,7 @@
 		C85FB0612235628700D66857 /* ToDoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C85FB0602235628700D66857 /* ToDoTableViewController.swift */; };
 		C85FB063223562A800D66857 /* ToDo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C85FB062223562A800D66857 /* ToDo.storyboard */; };
 		C8A043DB2236D04D00EC507F /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A043DA2236D04D00EC507F /* Item.swift */; };
+		C8AACAF22237B69E0050402E /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C8AACAF02237B69E0050402E /* DataModel.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		C85FB0602235628700D66857 /* ToDoTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoTableViewController.swift; sourceTree = "<group>"; };
 		C85FB062223562A800D66857 /* ToDo.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ToDo.storyboard; sourceTree = "<group>"; };
 		C8A043DA2236D04D00EC507F /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		C8AACAF12237B69E0050402E /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				C8A043DA2236D04D00EC507F /* Item.swift */,
+				C8AACAF02237B69E0050402E /* DataModel.xcdatamodeld */,
 			);
 			path = "Data Model";
 			sourceTree = "<group>";
@@ -171,6 +174,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C85FB04F2235621800D66857 /* AppDelegate.swift in Sources */,
+				C8AACAF22237B69E0050402E /* DataModel.xcdatamodeld in Sources */,
 				C8A043DB2236D04D00EC507F /* Item.swift in Sources */,
 				C85FB0612235628700D66857 /* ToDoTableViewController.swift in Sources */,
 			);
@@ -366,6 +370,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		C8AACAF02237B69E0050402E /* DataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				C8AACAF12237B69E0050402E /* DataModel.xcdatamodel */,
+			);
+			currentVersion = C8AACAF12237B69E0050402E /* DataModel.xcdatamodel */;
+			path = DataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = C85FB0432235621800D66857 /* Project object */;
 }

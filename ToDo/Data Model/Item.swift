@@ -8,11 +8,8 @@
 
 import Foundation
 
-class Item {
-    var name = ""
-    var check = false
-    init(n:String,c:Bool) {
-        name=n
-        check = c
-    }
+class Item:Encodable,Decodable {
+    var name: String = ""
+    var check:Bool = false
+    
 }

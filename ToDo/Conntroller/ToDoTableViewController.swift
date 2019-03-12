@@ -12,47 +12,18 @@ class ToDoTableViewController: UITableViewController {
 
     var list = [Item]()
     let defaults = UserDefaults.standard
-    
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("ItemValues.plist")
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if let items = defaults.value(forKey: "listValue") as? [Item]{
-            list = items
-        }
+//        if let items = defaults.value(forKey: "listValue") as? [Item]{
+//            list = items
+//        }
         
-        let itm1 = Item(n: "Cricket",c: false)
-        let itm2 = Item(n: "Cricket",c: true)
-        let itm3 = Item(n: "Cricket",c: false)
-        let itm4 = Item(n: "Cricket",c: false)
-        let itm5 = Item(n: "Cricket",c: false)
-        let itm6 = Item(n: "Cricket",c: false)
-        let itm7 = Item(n: "Cricket",c: false)
-        let itm8 = Item(n: "Cricket",c: false)
-        let itm9 = Item(n: "Cricket",c: false)
-        let itm10 = Item(n: "Cricket",c: false)
-        let itm11 = Item(n: "Cricket",c: false)
-        let itm12 = Item(n: "Cricket",c: false)
-        list.append(itm1)
-        list.append(itm2)
-        list.append(itm1)
-        list.append(itm1)
-        list.append(itm1)
-        list.append(itm1)
-        list.append(itm1)
-        list.append(itm1)
-        list.append(itm1)
-        list.append(itm1)
-        list.append(itm1)
-        list.append(itm1)
-        list.append(itm1)
-        list.append(itm1)
-        list.append(itm2)
-        list.append(itm2)
-        list.append(itm2)
-        list.append(itm2)
-        list.append(itm2)
-        list.append(itm2)
+        loadData()
+        //print(dataFilePath!)
+     
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -81,14 +52,14 @@ class ToDoTableViewController: UITableViewController {
         cell.textLabel?.text = list[indexPath.row].name
 
         cell.accessoryType = list[indexPath.row].check ? .checkmark : .none
-        
+        saveItem()
 //        if list[indexPath.row].check  {
 //            cell.accessoryType = .checkmark
 //        }
 //        else{
 //            cell.accessoryType = .none
 //        }
-        print(list[indexPath.row].check)
+        //print(list[indexPath.row].check)
         //tableView.reloadData()
         return cell
     }
@@ -115,9 +86,13 @@ class ToDoTableViewController: UITableViewController {
         
         let alert = UIAlertController(title: "Add New ToDo Item", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { (UIAlertAction) in
-            let itm = Item(n: textField.text!, c: true)
-            //itm.name = textField.text!
+            let itm = Item()
+            itm.name = textField.text!
             self.list.append(itm)
+            
+            self.saveItem()
+            
+            
             //self.defaults.setValue(self.list, forKey: "listValues")
             self.tableView.reloadData()
             
@@ -131,6 +106,28 @@ class ToDoTableViewController: UITableViewController {
         }
         
         present(alert, animated: true, completion: nil)
+    }
+    
+    func saveItem(){
+        let encoder = PropertyListEncoder()
+        
+        do{
+            let data = try encoder.encode(list)
+            try data.write(to: dataFilePath!)
+        }catch{
+            print(error)
+        }
+    }
+    func loadData(){
+        do{
+            let data = try Data(contentsOf: dataFilePath!)
+            let decoder = PropertyListDecoder()
+            
+            list = try decoder.decode([Item].self, from: data)
+        }catch{
+            print(error)
+        }
+        
     }
     
     /*

@@ -7,29 +7,23 @@
 //
 
 import UIKit
+import CoreData
 
 class ToDoTableViewController: UITableViewController {
 
     var list = [Item]()
     let defaults = UserDefaults.standard
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("ItemValues.plist")
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-//        if let items = defaults.value(forKey: "listValue") as? [Item]{
-//            list = items
-//        }
+
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
         loadData()
-        //print(dataFilePath!)
-     
         
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
     // MARK: - Table view data source
@@ -49,31 +43,17 @@ class ToDoTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "todo", for: indexPath)
 
         // Configure the cell...
-        cell.textLabel?.text = list[indexPath.row].name
+        cell.textLabel?.text = list[indexPath.row].title
 
         cell.accessoryType = list[indexPath.row].check ? .checkmark : .none
         saveItem()
-//        if list[indexPath.row].check  {
-//            cell.accessoryType = .checkmark
-//        }
-//        else{
-//            cell.accessoryType = .none
-//        }
-        //print(list[indexPath.row].check)
-        //tableView.reloadData()
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         list[indexPath.row].check = !list[indexPath.row].check
-        
-//        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark{
-//            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-//        }
-//        else{
-//            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-//        }
+
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
         print(list[indexPath.row])
@@ -86,14 +66,16 @@ class ToDoTableViewController: UITableViewController {
         
         let alert = UIAlertController(title: "Add New ToDo Item", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { (UIAlertAction) in
-            let itm = Item()
-            itm.name = textField.text!
+            
+            let itm = Item(context: self.context)
+            itm.title = textField.text!
+            itm.check = false
             self.list.append(itm)
             
             self.saveItem()
             
             
-            //self.defaults.setValue(self.list, forKey: "listValues")
+            
             self.tableView.reloadData()
             
         }
@@ -109,70 +91,40 @@ class ToDoTableViewController: UITableViewController {
     }
     
     func saveItem(){
-        let encoder = PropertyListEncoder()
+        
         
         do{
-            let data = try encoder.encode(list)
-            try data.write(to: dataFilePath!)
+            try context.save()
         }catch{
             print(error)
         }
     }
-    func loadData(){
+    func loadData(with request: NSFetchRequest<Item> = Item.fetchRequest()){
         do{
-            let data = try Data(contentsOf: dataFilePath!)
-            let decoder = PropertyListDecoder()
-            
-            list = try decoder.decode([Item].self, from: data)
+            //let request:NSFetchRequest<Item> =
+            list = try context.fetch(request)
         }catch{
             print(error)
         }
-        
+
+        tableView.reloadData()
     }
     
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+    
+
+}
+
+extension ToDoTableViewController:UISearchBarDelegate{
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if !(searchBar.text?.isEmpty)! {
+            let request: NSFetchRequest<Item> = Item.fetchRequest()
+            request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+            request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+            loadData(with: request)
+        }
+        else{
+            loadData()
+        }
+        
     }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

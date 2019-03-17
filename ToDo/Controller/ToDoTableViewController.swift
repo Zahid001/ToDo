@@ -12,17 +12,18 @@ import CoreData
 class ToDoTableViewController: UITableViewController {
 
     var list = [Item]()
-    let defaults = UserDefaults.standard
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("ItemValues.plist")
+    var selectedCategory: Category? {
+        didSet{
+            loadData()
+        }
+    }
+//    let defaults = UserDefaults.standard
+//    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("ItemValues.plist")
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-
-        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-        
-        loadData()
         
     }
 
@@ -70,6 +71,7 @@ class ToDoTableViewController: UITableViewController {
             let itm = Item(context: self.context)
             itm.title = textField.text!
             itm.check = false
+            itm.parentCategory = self.selectedCategory
             self.list.append(itm)
             
             self.saveItem()
@@ -99,7 +101,18 @@ class ToDoTableViewController: UITableViewController {
             print(error)
         }
     }
-    func loadData(with request: NSFetchRequest<Item> = Item.fetchRequest()){
+    
+    func loadData(with request: NSFetchRequest<Item> = Item.fetchRequest(),predicate:NSPredicate? = nil){
+        
+        let categoryPredicate = NSPredicate(format: "parentCategory.name CONTAINS %@", (selectedCategory?.name)!)
+        if let additionalPredicate = predicate{
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,additionalPredicate])
+        }
+        else{
+            request.predicate = categoryPredicate
+        }
+        
+        
         do{
             //let request:NSFetchRequest<Item> =
             list = try context.fetch(request)
@@ -116,15 +129,22 @@ class ToDoTableViewController: UITableViewController {
 
 extension ToDoTableViewController:UISearchBarDelegate{
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if !(searchBar.text?.isEmpty)! {
+
             let request: NSFetchRequest<Item> = Item.fetchRequest()
             request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
             request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
             loadData(with: request)
-        }
-        else{
-            loadData()
-        }
+
+
+    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
+        if searchBar.text?.count == 0 {
+            loadData()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
     }
 }
